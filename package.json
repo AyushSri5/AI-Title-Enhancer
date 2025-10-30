@@ -3,7 +3,7 @@
   "description": "",
   "scripts": {
     "postinstall": "motia install",
-    "dev": "motia dev",
+    "dev": "set NODE_TLS_REJECT_UNAUTHORIZED=0 && motia dev",
     "generate-types": "motia generate-types",
     "build": "motia build",
     "clean": "rm -rf dist node_modules python_modules .motia .mermaid"

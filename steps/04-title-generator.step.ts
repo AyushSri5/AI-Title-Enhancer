@@ -57,7 +57,7 @@ export const handler = async (eventData:any,{emit,logger,state}:any) => {
 
         const prompt = `You are an expert YouTube content creator.`
 
-        const response = await fetch('https://api.openai.com/v1/chat/completions',{
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -72,13 +72,24 @@ export const handler = async (eventData:any,{emit,logger,state}:any) => {
                     },
                     {
                         role: 'user',
-                        content: `Generate improved and catchy titles for the following YouTube videos from the channel ${channelName}`
+                        content: `Generate improved and catchy titles for the following YouTube videos from the channel ${channelName}. 
+                        Return the response as a JSON object with the following structure:
+                        {
+                            "improvedTitles": [
+                                {
+                                    "originalTitle": "string",
+                                    "improvedTitle": "string",
+                                    "rational": "string",
+                                    "url": "string"
+                                }
+                            ]
+                        }`
                     }
                 ],
                 temperature: 0.7,
-                response_format: {type: 'json_object'}
+                response_format: { type: 'json_object' }
             })
-        })
+        });
 
         if(!response.ok){
             const errorText = await response.json();
@@ -89,9 +100,7 @@ export const handler = async (eventData:any,{emit,logger,state}:any) => {
         const aiResponse = await response.json();
 
         const aiContent = aiResponse.choices[0].message;
-
-        const parsedResponse = JSON.parse(aiContent);
-
+        const parsedResponse = JSON.parse(aiContent.content);
         const improvedTitles: ImprovedTitle[] = parsedResponse.improvedTitles.map((item: any, index: number) => ({
             originalTitle: videos[index].title,
             improvedTitle: item.improvedTitle,
